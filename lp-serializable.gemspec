@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["nate@mrjones.io"]
 
   spec.summary       = "Serialize with Fast JSON API, flatten like AWS"
-  # spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.description   = "JSON API(jsonapi.org) serializer wrapper methods that work with Rails and can be used to serialize any kind of ruby object with AMS style output."
   spec.homepage      = "https://www.github.com/launchpadlab/lp-serializable"
   spec.license       = "MIT"
 
@@ -35,6 +35,15 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry"
+  spec.add_development_dependency(%q<activerecord>, [">= 4.2"])
+  spec.add_development_dependency(%q<active_model_serializers>, ["~> 0.10.7"])
+  spec.add_development_dependency(%q<jsonapi-rb>, ["~> 0.5.0"])
+  spec.add_development_dependency(%q<sqlite3>, ["~> 1.3"])
+  spec.add_development_dependency(%q<jsonapi-serializers>, ["~> 1.0.0"])
+  spec.add_development_dependency(%q<oj>, ["~> 3.3"])
+  spec.add_development_dependency(%q<rspec-benchmark>, ["~> 0.3.0"])
+  spec.add_runtime_dependency(%q<activesupport>, [">= 4.2"])
+  spec.add_development_dependency(%q<byebug>, [">= 0"])
 
-  spec.add_dependency "fast_jsonapi"
+  spec.add_dependency "fast_jsonapi", '>= 1.2'
 end

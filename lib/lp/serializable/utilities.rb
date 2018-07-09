@@ -3,6 +3,8 @@ module Lp
     module Utilities
       private
 
+      REDUNDANT_KEYS = %i(attributes relationships)
+
       def nest_data?(resource, nested)
         if nested
           resource
@@ -34,14 +36,25 @@ module Lp
       def flatten_hash(hash)
         return unless hash
         hash.each_with_object({}) do |(k, v), h|
-          if v.is_a?(Hash) && k == :attributes
+          if hash_and_matches_redundant_keys?(v, k)
             flatten_hash(v).map do |h_k, h_v|
-              h["#{h_k}".to_sym] = h_v
+              h[h_k.to_s.to_sym] = h_v
             end
-          else 
+          # NOTE: extract this into a different method?
+          elsif hash_and_has_data_key?(v)
+            h[k] = expose_data(v)
+          else
             h[k] = v
           end
         end
+      end
+
+      def hash_and_has_data_key?(value)
+        value.is_a?(Hash) && value.key?(:data)
+      end
+
+      def hash_and_matches_redundant_keys?(value, key)
+        value.is_a?(Hash) && REDUNDANT_KEYS.any?{|sym| sym == key}
       end
     end
   end

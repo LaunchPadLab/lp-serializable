@@ -17,6 +17,8 @@ class UserSerializer
 end
 
 RSpec.describe Lp::Serializable do
+  include_context 'movie class'
+
   let(:user) { User.new(1, 'Nathan') }
   let(:user_data){ {:data=>{:id=>1, :type=>:user, :name=>"Nathan"}} }
   let(:nested_user_data){ {:id=>1, :type=>:user, :name=>"Nathan"} }
@@ -42,6 +44,12 @@ RSpec.describe Lp::Serializable do
       expect(result).to eq(user_data)
     end
 
+# NOTE: Accessing data directly without any nested :data keys is the goal here
+    it 'serialize and flatten all relationships' do
+      result = serialize_and_flatten(movie)
+      expect(result[:data][:actors][0][:id]).to eq('1')
+    end
+
     it "serializes a single nested resource, using nested: true option" do
       result = serialize_and_flatten(user, nested: true)
       expect(result).to eq(nested_user_data)
@@ -57,6 +65,12 @@ RSpec.describe Lp::Serializable do
     it "serializes a single resource, given a class name under [:data]" do
       result = serialize_and_flatten_with_class_name(user, 'User')
       expect(result).to eq(user_data)
+    end
+
+# NOTE: Accessing data directly without any nested :data keys is the goal here
+    it 'serialize and flatten all relationships' do
+      result = serialize_and_flatten_with_class_name(movie, 'Movie')
+      expect(result[:data][:actors][0][:id]).to eq('1')
     end
 
     it "serializes a single nested resource, using nested: true option" do
@@ -76,6 +90,13 @@ RSpec.describe Lp::Serializable do
       users = 2.times.map { user }
       result = serialize_and_flatten_collection(users, 'User')
       expect(result).to eq(users_data)
+    end
+
+# NOTE: Accessing data directly without any nested :data keys is the goal here
+    it 'serialize and flatten all relationships' do
+      movies = build_movies(2)
+      result = serialize_and_flatten_collection(movies, 'Movie')
+      expect(result[:data][0][:actors][0][:id]).to eq('1')
     end
 
     it "serializes a collection, using nested: true option" do
