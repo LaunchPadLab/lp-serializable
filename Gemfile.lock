@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    lp-serializable (0.2.0)
+    lp-serializable (0.2.1)
       activesupport (>= 4.2)
-      fast_jsonapi (>= 1.2)
+      fast_jsonapi (>= 1.3)
 
 GEM
   remote: https://rubygems.org/
@@ -52,7 +52,7 @@ GEM
     crass (1.0.4)
     diff-lcs (1.3)
     erubi (1.7.1)
-    fast_jsonapi (1.2)
+    fast_jsonapi (1.3)
       activesupport (>= 4.2)
     i18n (1.0.1)
       concurrent-ruby (~> 1.0)
@@ -128,4 +128,4 @@ DEPENDENCIES
   sqlite3 (~> 1.3)
 
 BUNDLED WITH
-   1.16.1
+   1.16.3

@@ -3,7 +3,7 @@ module Lp
     module Utilities
       private
 
-      REDUNDANT_KEYS = %i(attributes relationships)
+      REDUNDANT_KEYS = %i[attributes relationships].freeze
 
       def nest_data?(resource, nested)
         if nested
@@ -35,17 +35,20 @@ module Lp
 
       def flatten_hash(hash)
         return unless hash
-        hash.each_with_object({}) do |(k, v), h|
-          if hash_and_matches_redundant_keys?(v, k)
-            flatten_hash(v).map do |h_k, h_v|
-              h[h_k.to_s.to_sym] = h_v
-            end
-          # NOTE: extract this into a different method?
-          elsif hash_and_has_data_key?(v)
-            h[k] = expose_data(v)
+        hash.each_with_object({}) do |(key, value), h|
+          if hash_and_matches_redundant_keys?(key, value)
+            flatten_hash_map(value, h)
+          elsif hash_and_has_data_key?(value)
+            h[key] = expose_data(value)
           else
-            h[k] = v
+            h[key] = value
           end
+        end
+      end
+
+      def flatten_hash_map(value, hash)
+        flatten_hash(value).map do |h_k, h_v|
+          hash[h_k.to_s.to_sym] = h_v
         end
       end
 
@@ -53,8 +56,9 @@ module Lp
         value.is_a?(Hash) && value.key?(:data)
       end
 
-      def hash_and_matches_redundant_keys?(value, key)
-        value.is_a?(Hash) && REDUNDANT_KEYS.any?{|sym| sym == key}
+      # NOTE Supports native relationship references in serializer
+      def hash_and_matches_redundant_keys?(key, value)
+        value.is_a?(Hash) && REDUNDANT_KEYS.any? { |sym| sym == key }
       end
     end
   end

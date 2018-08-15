@@ -24,54 +24,55 @@ Or install it yourself as:
 
 ## Usage
 
-### Controller Definition
+**Controller Definition**
 
 ```ruby
 class ApplicationController < ActionController::Base
-    include Lp::Serializable
+  include Lp::Serializable
 end
 
 class MoviesController < ApplicationController
-    def index
-        movies = Movie.all
-        movies_hash = serialize_and_flatten_collection(movies, 'Movie')
-        render json: movies_hash
-    end
+  def index
+    movies = Movie.all
+    movies_hash = serializable_collection(movies, 'Movie')
+    render json: movies_hash
+  end
 
-    def show
-        movie = Movie.find(params[:id])
-        movie_hash = serialize_and_flatten(movie)
-        render json: movie
-    end
+  def show
+    movie = Movie.find(params[:id])
+    movie_hash = serializable(movie)
+    render json: movie
+  end
 end
 ```
 
-### Serializer Definition
+**Serializer Definition**
 
 ```ruby
 class MovieSerializer
-    include FastJsonapi::ObjectSerializer
+  include FastJsonapi::ObjectSerializer
 
-    attributes :name, :year
+  attributes :name, :year
 
-    has_many :actors
-    belongs_to :owner
+  has_many :actors
+  belongs_to :owner
 end
 
 class ActorSerializer
-    include FastJsonapi::ObjectSerializer
+  include FastJsonapi::ObjectSerializer
     
-    attributes :id
+  attributes :id
 end
 
 class OwnerSerializer
-    include FastJsonapi::ObjectSerializer
+  include FastJsonapi::ObjectSerializer
 
-    attributes :id
+  attributes :id
 end
 ```
 
-### Sample Object
+## Object Serialization
+**Sample Object**
 
 ```ruby
 movie = Movie.new
@@ -83,14 +84,12 @@ movie.movie_type_id = 1
 movie
 ```
 
-### Object Serialization
-
-#### Return a hash
+**Return a hash**
 ```ruby
 hash = serialize_and_flatten(movie)
 ```
 
-#### Output
+**Output**
 
 ```json
 {
@@ -120,11 +119,56 @@ hash = serialize_and_flatten(movie)
 
 For more information on configuration, refer to [fast_jsonapi](https://github.com/Netflix/fast_jsonapi#customizable-options) documentation.
 
+## Deeply Nested Serialization Pattern
+
+Fastjson API does not support serialization of deeply nested resources.
+
+To get around this, extend `Lp::Serializable` in your serializers:
+
+```ruby
+class MovieSerializer
+  include FastJsonapi::ObjectSerializer
+  extend Lp::Serializable
+
+ ...
+end
+```
+
+Define custom attributes for relationships, instead of defining them via fastjson_api:
+
+```ruby
+class MovieSerializer
+  include FastJsonapi::ObjectSerializer
+  extend Lp::Serializable
+
+ attribute :actors do |object|
+  collection = object.actors
+  serializer = 'Actor'
+  serializable_collection(collection, serializer, nested: true)
+ end
+end
+```
+
+Attribute `:actors` will trigger `ActorSerializer` to serialize the actors collection. Consequently, any relationships defined in `ActorSerializer` via custom attributes and serialized with `serializable_` methods (using the `nested: true` option) will be appropriately nested.
+
+
 ## Options Support
 
-lp-serializable does not currently support fast_jsonapi's options hash when instantiating serializers. 
+Supported options include:
 
-This affects serializing with [params](https://github.com/Netflix/fast_jsonapi#params), [compound documents](https://github.com/Netflix/fast_jsonapi#compound-document), metadata, and links.
+- `:fields` ([Sparse Fieldsets](https://github.com/Netflix/fast_jsonapi#sparse-fieldsets))
+- `:params` ([Params / Conditional Attributes](https://github.com/Netflix/fast_jsonapi#params))
+
+Other options are "supported" but may yeild unexpected results, as Serializable's hash flattening prioritizes deeply nested data structures.
+
+`:is_collection` is baked into Seriazable methods for accurate detection of collections or singular resources.
+
+## Aliases
+
+- `serialize_and_flatten()` = `serializable()`
+- `serialize_and_flatten_with_class_name()` = `serializable_class()`
+- `serialize_and_flatten_collection()` = `serializable_collection()`
+
 
 ## Development
 
