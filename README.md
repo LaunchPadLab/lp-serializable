@@ -41,7 +41,7 @@ class MoviesController < ApplicationController
   def show
     movie = Movie.find(params[:id])
     movie_hash = serializable(movie)
-    render json: movie
+    render json: movie_hash
   end
 end
 ```
@@ -52,7 +52,13 @@ end
 class MovieSerializer
   include FastJsonapi::ObjectSerializer
 
-  attributes :name, :year
+  attributes :name
+  
+  attribute :year, if: Proc.new { |object| object.year.present? }
+  
+  attribute :last_updated do |object|
+    object.updated_at
+  end
 
   has_many :actors
   belongs_to :owner
@@ -97,7 +103,7 @@ hash = serialize_and_flatten(movie)
     "id": "3",
     "type": "movie",
     "name": "test movie",
-    "year": null,
+    "last_updated": "2019-04-26 18:55:46 UTC",
     "actors": [
         {
             "id": "1",
@@ -157,7 +163,8 @@ Attribute `:actors` will trigger `ActorSerializer` to serialize the actors colle
 Supported options include:
 
 - `:fields` ([Sparse Fieldsets](https://github.com/Netflix/fast_jsonapi#sparse-fieldsets))
-- `:params` ([Params / Conditional Attributes](https://github.com/Netflix/fast_jsonapi#params))
+- `:params` ([Params](https://github.com/Netflix/fast_jsonapi#params))
+- [Conditional Attributes](https://github.com/Netflix/fast_jsonapi#conditional-attributes)
 
 Other options are "supported" but may yeild unexpected results, as Serializable's hash flattening prioritizes deeply nested data structures.
 
