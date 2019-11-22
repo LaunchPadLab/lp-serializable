@@ -3,10 +3,11 @@ require "pry"
 include Lp::Serializable
 
 class User
-  attr_reader :id, :name
-  def initialize(id, name)
+  attr_reader :id, :name, :admin
+  def initialize(id, name, admin=false)
     @id = id
     @name = name
+    @admin = admin
   end
 end
 
@@ -14,27 +15,33 @@ class UserSerializer
   include FastJsonapi::ObjectSerializer
 
   attributes :id, :name
+  
+  attribute :display_name do |object|
+    "#{object.id}: #{object.name}"
+  end
+  
+  attribute :admin, if: Proc.new { |o| o.admin }
 end
 
 RSpec.describe Lp::Serializable do
   include_context "movie class"
 
   let(:user) { User.new(1, "Nathan") }
-  let(:user_data) { { data: { id: 1, type: :user, name: "Nathan" } } }
-  let(:nested_user_data) { { id: 1, type: :user, name: "Nathan" } }
+  let(:user_data) { { data: { id: 1, type: :user, name: "Nathan", display_name: "1: Nathan" } } }
+  let(:nested_user_data) { { id: 1, type: :user, name: "Nathan", display_name: "1: Nathan" } }
   let(:users_data) do
     {
       data: [
-        { id: 1, type: :user, name: "Nathan" },
-        { id: 1, type: :user, name: "Nathan" },
+        { id: 1, type: :user, name: "Nathan", display_name: "1: Nathan" },
+        { id: 1, type: :user, name: "Nathan", display_name: "1: Nathan" },
       ],
     }
   end
 
   let(:nested_users_data) do
     [
-      { id: 1, type: :user, name: "Nathan" },
-      { id: 1, type: :user, name: "Nathan" },
+      { id: 1, type: :user, name: "Nathan", display_name: "1: Nathan" },
+      { id: 1, type: :user, name: "Nathan", display_name: "1: Nathan" },
     ]
   end
 
@@ -59,6 +66,12 @@ RSpec.describe Lp::Serializable do
     it "raises NameError, given a collection" do
       users = Array.new(2) { user }
       expect { serialize_and_flatten(users) }.to raise_error(NameError)
+    end
+    
+    it "accepts options for conditional attributes" do
+      user = User.new(2, "David", true)
+      user_data = { data: { id: 2, type: :user, name: "David", display_name: "2: David", admin: true } }
+      expect(serialize_and_flatten(user)).to eq(user_data)
     end
   end
 
