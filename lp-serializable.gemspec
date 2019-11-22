@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["mrjonesbot"]
   spec.email         = ["nate@mrjones.io"]
 
-  spec.summary       = "Serialize with Fast JSON API, flatten like AWS"
+  spec.summary       = "Serialize with Fast JSON API, flatten like AMS"
   spec.description   = "JSON API(jsonapi.org) serializer wrapper methods that work with Rails and can be used to serialize any kind of ruby object with AMS style output."
   spec.homepage      = "https://www.github.com/launchpadlab/lp-serializable"
   spec.license       = "MIT"
