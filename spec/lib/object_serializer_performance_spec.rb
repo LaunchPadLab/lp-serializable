@@ -194,38 +194,38 @@ describe FastJsonapi::ObjectSerializer, performance: true do
   #   end
   # end
 
-  context 'when comparing with AMS 0.10.x and with polymorphic has_many' do
-    [1, 25, 250, 1000].each do |group_count|
-      it "should serialize #{group_count} records at least #{SERIALIZERS[:ams][:speed_factor]} times faster than AMS" do
-        ams_groups = build_ams_groups(group_count)
-        groups = build_groups(group_count)
-        jsonapi_groups = build_jsonapi_groups(group_count)
-        jsonapis_groups = build_jsonapis_groups(group_count)
+  # context 'when comparing with AMS 0.10.x and with polymorphic has_many' do
+  #   [1, 25, 250, 1000].each do |group_count|
+  #     it "should serialize #{group_count} records at least #{SERIALIZERS[:ams][:speed_factor]} times faster than AMS" do
+  #       ams_groups = build_ams_groups(group_count)
+  #       groups = build_groups(group_count)
+  #       jsonapi_groups = build_jsonapi_groups(group_count)
+  #       jsonapis_groups = build_jsonapis_groups(group_count)
 
-        options = {}
+  #       options = {}
 
-        serializers = {
-          fast_jsonapi: GroupSerializer.new(groups, options),
-          lp_serializable: Proc.new { serialize_and_flatten_collection(groups, 'Group')},
-          ams: ActiveModelSerializers::SerializableResource.new(ams_groups),
-          jsonapi: JSONAPISerializerB.new(jsonapi_groups),
-          jsonapis: JSONAPISSerializerB.new(jsonapis_groups)
-        }
+  #       serializers = {
+  #         fast_jsonapi: GroupSerializer.new(groups, options),
+  #         lp_serializable: Proc.new { serialize_and_flatten_collection(groups, 'Group')},
+  #         ams: ActiveModelSerializers::SerializableResource.new(ams_groups),
+  #         jsonapi: JSONAPISerializerB.new(jsonapi_groups),
+  #         jsonapis: JSONAPISSerializerB.new(jsonapis_groups)
+  #       }
 
-        message = "Serialize to JSON string #{group_count} with polymorphic has_many"
-        # json_benchmarks = run_json_benchmark(message, group_count, serializers)
+  #       message = "Serialize to JSON string #{group_count} with polymorphic has_many"
+  #       # json_benchmarks = run_json_benchmark(message, group_count, serializers)
 
-        message = "Serialize to Ruby Hash #{group_count} with polymorphic has_many"
-        hash_benchmarks = run_hash_benchmark(message, group_count, serializers)
+  #       message = "Serialize to Ruby Hash #{group_count} with polymorphic has_many"
+  #       hash_benchmarks = run_hash_benchmark(message, group_count, serializers)
 
-        # json
-        # expect(json_benchmarks[:fast_jsonapi][:json].length).to eq json_benchmarks[:ams][:json].length
-        # json_speed_up = json_benchmarks[:ams][:time] / json_benchmarks[:fast_jsonapi][:time]
+  #       # json
+  #       # expect(json_benchmarks[:fast_jsonapi][:json].length).to eq json_benchmarks[:ams][:json].length
+  #       # json_speed_up = json_benchmarks[:ams][:time] / json_benchmarks[:fast_jsonapi][:time]
 
-        # hash
-        hash_speed_up = hash_benchmarks[:ams][:time] / hash_benchmarks[:fast_jsonapi][:time]
-        expect(hash_speed_up).to be >= SERIALIZERS[:ams][:speed_factor]
-      end
-    end
-  end
+  #       # hash
+  #       hash_speed_up = hash_benchmarks[:ams][:time] / hash_benchmarks[:fast_jsonapi][:time]
+  #       expect(hash_speed_up).to be >= SERIALIZERS[:ams][:speed_factor]
+  #     end
+  #   end
+  # end
 end
