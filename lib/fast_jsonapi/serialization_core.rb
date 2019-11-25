@@ -72,9 +72,8 @@ module FastJsonapi
         end
       end
 
-      def attributes_hash(record, fieldset = nil, params = {})
+      def attributes_hash(record, params = {})
         attributes = attributes_to_serialize
-        attributes = attributes.slice(*fieldset) if fieldset.present?
         attributes.each_with_object({}) do |(_k, attribute), hash|
           attribute.serialize(record, params, hash)
         end
