@@ -73,12 +73,9 @@ module FastJsonapi
       end
 
       def attributes_hash(record, params = {})
-        attributes_to_serialize.each_with_object({}) do |(key, method), attr_hash|
-          attr_hash[key] = if method.is_a?(Proc)
-            method.arity == 1 ? method.call(record) : method.call(record, params)
-          else
-            record.public_send(method)
-          end
+        attributes = attributes_to_serialize
+        attributes.each_with_object({}) do |(_k, attribute), hash|
+          attribute.serialize(record, params, hash)
         end
       end
 
