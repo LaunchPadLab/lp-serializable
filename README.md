@@ -92,7 +92,7 @@ movie
 
 **Return a hash**
 ```ruby
-hash = serialize_and_flatten(movie)
+hash = serializable(movie)
 ```
 
 **Output**
@@ -157,6 +157,18 @@ end
 
 Attribute `:actors` will trigger `ActorSerializer` to serialize the actors collection. Consequently, any relationships defined in `ActorSerializer` via custom attributes and serialized with `serializable_` methods (using the `nested: true` option) will be appropriately nested.
 
+## Custom Serializer Class
+
+Use `#serializable_class` to serialize with a custom class:
+
+```ruby
+  def show
+    movie = Movie.find(params[:id])
+    # Will serialize with FilmSerializer instead of MovieSerializer
+    movie_hash = serializable_class(movie, 'Film')
+    render json: movie_hash
+  end
+```
 
 ## Options Support
 
