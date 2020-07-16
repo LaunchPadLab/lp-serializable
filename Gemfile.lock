@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lp-serializable (0.2.3)
+    lp-serializable (1.0.0)
       activesupport (>= 4.2)
       fast_jsonapi (>= 1.3)
 
