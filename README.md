@@ -178,9 +178,9 @@ Supported options include:
 - `:params` ([Params](https://github.com/Netflix/fast_jsonapi#params))
 - [Conditional Attributes](https://github.com/Netflix/fast_jsonapi#conditional-attributes)
 
-Other options are "supported" but may yeild unexpected results, as Serializable's hash flattening prioritizes deeply nested data structures.
+Other options are "supported" but may yield unexpected results, as Serializable's hash flattening prioritizes deeply nested data structures.
 
-`:is_collection` is baked into Seriazable methods for accurate detection of collections or singular resources.
+`:is_collection` is baked into Serializable methods for accurate detection of collections or singular resources.
 
 ## Aliases
 

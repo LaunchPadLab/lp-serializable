@@ -153,9 +153,23 @@ RSpec.shared_context 'movie class' do
       # director attr is not mentioned intentionally
       attributes :name, :release_year
       has_many :actors
-      belongs_to :owner, record_type: :user
       belongs_to :movie_type
       has_one :advertising_campaign
+    end
+
+    # Serializer with custom attribute as described in docs
+    class LegacyMovieSerializer
+      include FastJsonapi::ObjectSerializer
+      set_type :movie
+      attributes :name, :release_year
+      belongs_to :movie_type
+      has_one :advertising_campaign
+
+      attribute :actors do |object|
+        collection = object.actors
+        serializer = 'Actor'
+        serializable_collection(collection, serializer, nested: true)
+       end
     end
 
     class MovieWithoutIdStructSerializer
@@ -168,7 +182,6 @@ RSpec.shared_context 'movie class' do
       set_type :movie
       attributes :name, :release_year
       has_many :actors
-      belongs_to :owner, record_type: :user
       belongs_to :movie_type
 
       cache_options enabled: true
@@ -179,7 +192,6 @@ RSpec.shared_context 'movie class' do
       set_type :movie
       attributes :name, :release_year
       has_many :actors, cached: true
-      belongs_to :owner, record_type: :user
       belongs_to :movie_type
 
       cache_options enabled: true

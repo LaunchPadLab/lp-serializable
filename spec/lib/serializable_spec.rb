@@ -45,7 +45,7 @@ RSpec.describe Lp::Serializable do
     ]
   end
 
-  context "#serialize_and_flatten" do
+  describe "#serialize_and_flatten" do
     it "serialize a single resource, under [:data]" do
       result = serialize_and_flatten(user)
       expect(result).to eq(user_data)
@@ -75,7 +75,7 @@ RSpec.describe Lp::Serializable do
     end
   end
 
-  context "#serialize_and_flatten_with_class_name" do
+  describe "#serialize_and_flatten_with_class_name" do
     it "serializes a single resource, given a class name under [:data]" do
       result = serialize_and_flatten_with_class_name(user, "User")
       expect(result).to eq(user_data)
@@ -86,6 +86,7 @@ RSpec.describe Lp::Serializable do
     it "serialize and flatten all relationships" do
       result = serialize_and_flatten_with_class_name(movie, "Movie")
       expect(result[:data][:actors][0][:id]).to eq("1")
+      expect(result[:data][:actors][0][:name]).to eq("Test 1")
     end
 
     it "serializes a single nested resource, using nested: true option" do
@@ -98,9 +99,17 @@ RSpec.describe Lp::Serializable do
       expect { serialize_and_flatten_with_class_name(users, "User") }.
         to raise_error(UnserializableCollection)
     end
+
+    context "with custom attribute instead of has_many" do
+      it "returns nested data" do
+        result = serialize_and_flatten_with_class_name(movie, "LegacyMovie")
+        expect(result[:data][:actors][0][:id]).to eq("1")
+        expect(result[:data][:actors][0][:name]).to eq("Test 1")
+      end
+    end
   end
 
-  context "#serialize_and_flatten_collection" do
+  describe "#serialize_and_flatten_collection" do
     it "serializes a collection, given a class name under [:data]" do
       users = Array.new(2) { user }
       result = serialize_and_flatten_collection(users, "User")
