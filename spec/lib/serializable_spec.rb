@@ -84,7 +84,7 @@ RSpec.describe Lp::Serializable do
     # NOTE: Accessing data directly without any nested :data keys,
     # is the goal here
     it "serialize and flatten all relationships" do
-      result = serialize_and_flatten_with_class_name(movie, "Movie")
+      result = serialize_and_flatten_with_class_name(movie, "Movie", include: [:actors])
       expect(result[:data][:actors][0][:id]).to eq("1")
       expect(result[:data][:actors][0][:name]).to eq("Test 1")
     end

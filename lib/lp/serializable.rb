@@ -5,16 +5,15 @@ module Lp
   module Serializable
     include Exceptions
 
-    def serialize(resource, serializer_options: {}, serializer_class: nil, eager_load: true)
+    def serialize(resource, serializer_options: {}, serializer_class: nil)
       serializer = serializer_class || lookup_serializer(resource)
-      modified_options = eager_load ? enable_eager_loading(serializer_options, serializer) : serializer_options
-      json_api_hash = serializer.new(resource, modified_options).serializable_hash
-      normalize_serialized_hash(json_api_hash)
+      json_api_hash = serializer.new(resource, serializer_options).serializable_hash
+      normalize_serialized_hash(json_api_hash, { include: serializer_options[:include] })
     end
 
-    def normalize_serialized_hash(hash)
+    def normalize_serialized_hash(hash, **options)
       return hash unless hash
-      Normalizer.new(hash).normalize
+      Normalizer.new(hash, options).normalize
     end
 
     def lookup_serializer(resource, class_name: nil)
