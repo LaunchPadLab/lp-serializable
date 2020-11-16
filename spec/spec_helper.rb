@@ -9,6 +9,7 @@ require 'jsonapi/serializable'
 require 'jsonapi-serializers'
 require 'lp/serializable'
 
+Dir[File.dirname(__FILE__) + '/shared/fixtures/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/shared/contexts/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/shared/examples/*.rb'].each {|file| require file }
 

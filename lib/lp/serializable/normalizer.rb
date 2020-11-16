@@ -46,6 +46,7 @@ module Lp
 
     # The resource nested under "data" in the response hash is the main one.
     def main_resource
+      # TODO
       serialized_hash[:data]
     end
 
