@@ -7,6 +7,7 @@ module Lp
     include Exceptions
 
     def serialize_and_flatten(resource, options = {})
+      return { :data => nil }  if resource.nil? # Match the return of serializable_class when given nil
       collection_option = collection?(false)
       base_hash = serialize_hash(resource, options.merge(collection_option))
       flatten_and_nest_data(base_hash, set_nested_option(options))

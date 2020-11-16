@@ -15,11 +15,11 @@ class UserSerializer
   include FastJsonapi::ObjectSerializer
 
   attributes :id, :name
-  
+
   attribute :display_name do |object|
     "#{object.id}: #{object.name}"
   end
-  
+
   attribute :admin, if: Proc.new { |o| o.admin }
 end
 
@@ -51,6 +51,11 @@ RSpec.describe Lp::Serializable do
       expect(result).to eq(user_data)
     end
 
+    it "serialize nil, under [:data] if resource is nil" do
+      result = serialize_and_flatten(nil)
+      expect(result).to eq({ :data => nil })
+    end
+
     # NOTE: Accessing data directly without any nested :data keys,
     # is the goal here
     it "serialize and flatten all relationships" do
@@ -67,7 +72,7 @@ RSpec.describe Lp::Serializable do
       users = Array.new(2) { user }
       expect { serialize_and_flatten(users) }.to raise_error(NameError)
     end
-    
+
     it "accepts options for conditional attributes" do
       user = User.new(2, "David", true)
       user_data = { data: { id: 2, type: :user, name: "David", display_name: "2: David", admin: true } }
@@ -79,6 +84,11 @@ RSpec.describe Lp::Serializable do
     it "serializes a single resource, given a class name under [:data]" do
       result = serialize_and_flatten_with_class_name(user, "User")
       expect(result).to eq(user_data)
+    end
+
+    it "Serialize nil, under [:data] if resource is nil" do
+      result = serialize_and_flatten_with_class_name(nil, "User")
+      expect(result).to eq({ :data => nil })
     end
 
     # NOTE: Accessing data directly without any nested :data keys,
